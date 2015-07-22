@@ -75,8 +75,6 @@ model = BinaryReluConv2DLayer(
     n_in=l0_n_in, filter_shape=l0_filter_shape, npy_rng=npy_rng
 ) + MaxPoolingLayer(
     pool_size=l0_poolsize, stride=l0_stride, ignore_border=True
-) + BinaryLinearSVM(None, 10, npy_rng=npy_rng)
-"""
 ) + BinaryReluConv2DLayer(
     filter_shape=l1_filter_shape, npy_rng=npy_rng
 ) + MaxPoolingLayer(
@@ -87,7 +85,7 @@ model = BinaryReluConv2DLayer(
     pool_size=l2_poolsize, stride=l2_stride, ignore_border=True
 ) + BinaryReluLayer(None, 1600, npy_rng=npy_rng
 ) + BinaryReluLayer(None, 1600, npy_rng=npy_rng
-"""
+) + BinaryLinearSVM(None, 10, npy_rng=npy_rng)
 
 model.print_layer()
 
@@ -96,9 +94,6 @@ model_test = ReluConv2DLayer(
     init_w=model.models_stack[0].w, init_b=model.models_stack[0].b, npy_rng=npy_rng
 ) + MaxPoolingLayer(
     pool_size=l0_poolsize, stride=l0_stride, ignore_border=True
-) + LinearSVM(None, 10,
-    init_w=model.models_stack[2].w, init_b=model.models_stack[2].b, npy_rng=npy_rng)
-"""
 ) + ReluConv2DLayer(
     filter_shape=l1_filter_shape, 
     init_w=model.models_stack[2].w, init_b=model.models_stack[2].b, npy_rng=npy_rng
@@ -113,9 +108,8 @@ model_test = ReluConv2DLayer(
     init_w=model.models_stack[6].w, init_b=model.models_stack[6].b, npy_rng=npy_rng
 ) + ReluLayer(None, 1600,
     init_w=model.models_stack[7].w, init_b=model.models_stack[7].b, npy_rng=npy_rng
-"""
-
-pdb.set_trace()
+) + LinearSVM(None, 10,
+    init_w=model.models_stack[8].w, init_b=model.models_stack[8].b, npy_rng=npy_rng)
 
 # compile error rate counters:
 index = T.lscalar()
@@ -164,11 +158,12 @@ for epoch in xrange(finetune_epc):
             break
         trainer.set_learningrate(trainer.learningrate*0.8)
     prev_cost = cost
-    if epoch % 10 == 0:
-        print "*** error rate: train: %f, test: %f" % (train_error(), test_error())
+    # if epoch % 10 == 0:
+    print "*** error rate: train: %f, test: %f" % (train_error(), test_error())
     try:
-        if epoch % 100 == 0:
-            save_params(model, 'CONVSVM_flt553_pl322_st322_nf128-192-192_256_1600-1600-10.npy')
+        pass
+        #if epoch % 100 == 0:
+        #    save_params(model, 'CONVSVM_flt553_pl322_st322_nf128-192-192_256_1600-1600-10.npy')
     except:
         pass
 print "***FINAL error rate: train: %f, test: %f" % (train_error(), test_error())
